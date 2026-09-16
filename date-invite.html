@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>For Sahanmi Vidunima</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+<style>
+/* ─────────────────────────────────────────────
+   TOKENS  — deep noir-rose palette
+───────────────────────────────────────────── */
+:root {
+  --void:       #0a0608;
+  --deep:       #130b0f;
+  --surface:    #1c1017;
+  --rim:        #2e1a23;
+  --rose:       #c8566b;
+  --rose-light: #e87d93;
+  --rose-muted: #7a3347;
+  --blush:      #f2c4ce;
+  --gold:       #d4a96a;
+  --text-a:     #f5ede8;
+  --text-b:     #c4a8ae;
+  --text-c:     #7a5c63;
+  --r-btn:      56px;
+}
+
+/* ─────────────────────────────────────────────
+   RESET
+───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  min-height:100svh;
+  background:var(--void);
+  color:var(--text-a);
+  font-family:'Inter',sans-serif;
+  font-weight:300;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ─────────────────────────────────────────────
+   ANIMATED GRADIENT AURORA  (background)
+───────────────────────────────────────────── */
+.aurora{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;overflow:hidden;
+}
+.aurora__orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:.18;
+  animation:orbDrift linear infinite;
+}
+.aurora__orb:nth-child(1){
+  width:60vw;height:60vw;
+  background:radial-gradient(circle, #c8566b 0%, transparent 70%);
+  top:-20%;left:-10%;
+  animation-duration:22s;
+}
+.aurora__orb:nth-child(2){
+  width:50vw;height:50vw;
+  background:radial-gradient(circle, #7a3347 0%, transparent 70%);
+  bottom:-15%;right:-5%;
+  animation-duration:28s;animation-delay:-10s;
+}
+.aurora__orb:nth-child(3){
+  width:35vw;height:35vw;
+  background:radial-gradient(circle, #d4a96a 0%, transparent 70%);
+  top:40%;left:50%;
+  animation-duration:18s;animation-delay:-6s;
+  opacity:.10;
+}
+@keyframes orbDrift{
+  0%   {transform:translate(0,0) scale(1);}
+  33%  {transform:translate(6vw,-8vh) scale(1.08);}
+  66%  {transform:translate(-4vw,5vh) scale(0.95);}
+  100% {transform:translate(0,0) scale(1);}
+}
+
+/* ─────────────────────────────────────────────
+   PARTICLE CANVAS
+───────────────────────────────────────────── */
+#particle-canvas{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;opacity:.55;
+}
+
+/* ─────────────────────────────────────────────
+   APP SHELL
+───────────────────────────────────────────── */
+#app{
+  position:relative;z-index:1;
+  min-height:100svh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px 20px 100px;
+}
+
+/* ─────────────────────────────────────────────
+   STEP VISIBILITY
+───────────────────────────────────────────── */
+.step{display:none;width:100%;max-width:440px;}
+.step.active{display:block;}
+
+/* ─────────────────────────────────────────────
+   CARD — single premium surface
+───────────────────────────────────────────── */
+.card{
+  background:linear-gradient(145deg,
+    rgba(28,16,23,.92) 0%,
+    rgba(19,11,15,.96) 100%);
+  border:1px solid rgba(200,86,107,.18);
+  border-radius:28px;
+  padding:48px 32px 44px;
+  width:100%;
+  position:relative;
+  overflow:hidden;
+  /* Layered glow rim */
+  box-shadow:
+    0 0 0 1px rgba(200,86,107,.06),
+    0 24px 64px rgba(0,0,0,.55),
+    0 0 80px rgba(200,86,107,.07) inset;
+}
+
+/* Shimmer line across top */
+.card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(200,86,107,.6) 40%,
+    rgba(212,169,106,.5) 60%,
+    transparent 100%);
+  animation:shimmerLine 4s ease-in-out infinite;
+}
+@keyframes shimmerLine{
+  0%,100%{opacity:.3;transform:scaleX(.6);}
+  50%     {opacity:1;transform:scaleX(1);}
+}
+
+/* Soft radial glow behind content */
+.card::after{
+  content:'';
+  position:absolute;
+  top:-60px;left:50%;transform:translateX(-50%);
+  width:280px;height:280px;
+  background:radial-gradient(circle,rgba(200,86,107,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* ─────────────────────────────────────────────
+   CARD ENTRANCE
+───────────────────────────────────────────── */
+.card-enter{
+  animation:cardReveal .7s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes cardReveal{
+  from{opacity:0;transform:translateY(36px) scale(.97);}
+  to  {opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* ─────────────────────────────────────────────
+   ORNAMENT  — thin decorative line pair
+───────────────────────────────────────────── */
+.ornament{
+  display:flex;align-items:center;gap:14px;
+  margin:0 auto 28px;
+  width:fit-content;
+}
+.ornament__line{
+  width:40px;height:1px;
+  background:linear-gradient(90deg, transparent, var(--rose-muted));
+}
+.ornament__line.r{
+  background:linear-gradient(90deg, var(--rose-muted), transparent);
+}
+.ornament__dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--rose);
+  box-shadow:0 0 8px var(--rose);
+  animation:dotPulse 2.5s ease-in-out infinite;
+}
+@keyframes dotPulse{
+  0%,100%{box-shadow:0 0 6px var(--rose);transform:scale(1);}
+  50%     {box-shadow:0 0 16px var(--rose-light),0 0 4px #fff;transform:scale(1.25);}
+}
+
+/* ─────────────────────────────────────────────
+   TYPOGRAPHY
+───────────────────────────────────────────── */
+.label{
+  font-family:'Inter',sans-serif;
+  font-size:.68rem;
+  letter-spacing:.18em;
+  color:var(--text-c);
+  font-weight:400;
+  margin-bottom:16px;
+  text-align:center;
+}
+
+.headline{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem,7vw,2.6rem);
+  font-weight:300;
+  line-height:1.18;
+  text-align:center;
+  color:var(--text-a);
+  margin-bottom:10px;
+  letter-spacing:.01em;
+}
+.headline em{
+  font-style:italic;
+  color:var(--blush);
+  font-weight:300;
+}
+
+.subline{
+  font-size:.85rem;
+  color:var(--text-b);
+  text-align:center;
+  line-height:1.7;
+  font-weight:300;
+  margin-bottom:0;
+}
+
+.question{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:clamp(1.3rem,5vw,1.6rem);
+  font-weight:300;
+  color:var(--blush);
+  text-align:center;
+  margin:28px 0 36px;
+  line-height:1.4;
+  position:relative;z-index:1;
+}
+
+/* ─────────────────────────────────────────────
+   SECTION HEADER (step 2)
+───────────────────────────────────────────── */
+.section-title{
+  font-size:.72rem;
+  letter-spacing:.14em;
+  color:var(--text-c);
+  margin:28px 0 12px;
+  font-weight:400;
+  padding-left:2px;
+}
+
+/* ─────────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────────── */
+
+/* Primary — the main CTA */
+.btn-primary{
+  display:block;width:100%;
+  padding:18px 32px;
+  border:none;border-radius:var(--r-btn);
+  background:linear-gradient(135deg, var(--rose) 0%, #a03350 100%);
+  color:#fff;
+  font-family:'Inter',sans-serif;
+  font-size:.9rem;
+  font-weight:500;
+  letter-spacing:.06em;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 32px rgba(200,86,107,.35);
+  transition:transform .2s ease, box-shadow .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-primary::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%);
+  opacity:0;transition:opacity .25s;
+}
+.btn-primary:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 44px rgba(200,86,107,.5);
+}
+.btn-primary:hover::before{opacity:1;}
+.btn-primary:active{transform:scale(.97);}
+
+/* Breathing glow animation on step 1 yes button */
+.btn-primary.pulse{
+  animation:breathe 3s ease-in-out infinite;
+}
+@keyframes breathe{
+  0%,100%{box-shadow:0 4px 32px rgba(200,86,107,.35);}
+  50%    {box-shadow:0 4px 56px rgba(200,86,107,.7),0 0 0 8px rgba(200,86,107,.1);}
+}
+
+/* Ghost / secondary */
+.btn-ghost{
+  display:inline-block;
+  padding:14px 28px;
+  border:1px solid rgba(200,86,107,.3);
+  border-radius:var(--r-btn);
+  background:transparent;
+  color:var(--text-b);
+  font-family:'Inter',sans-serif;
+  font-size:.85rem;
+  font-weight:400;
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:all .22s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-ghost:hover{
+  background:rgba(200,86,107,.08);
+  border-color:rgba(200,86,107,.5);
+  color:var(--blush);
+}
+
+/* Button pair row */
+.btn-row{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+/* No button — uses fixed position when escaping */
+#btn-no{
+  transition:left .35s cubic-bezier(.34,1.56,.64,1),
+             top  .35s cubic-bezier(.34,1.56,.64,1),
+             transform .35s ease,
+             opacity .35s ease,
+             font-size .4s ease,
+             padding .4s ease;
+}
+#btn-no.roaming{position:fixed;}
+
+/* WhatsApp */
+.btn-whatsapp{
+  display:block;width:100%;
+  padding:18px 32px;
+  border-radius:var(--r-btn);
+  background:linear-gradient(135deg,#25d366 0%,#0f9d45 100%);
+  color:#fff;
+  font-family:'Inter',sans-serif;
+  font-size:.9rem;font-weight:500;
+  letter-spacing:.06em;
+  text-decoration:none;text-align:center;
+  box-shadow:0 4px 28px rgba(37,211,102,.3);
+  transition:transform .2s ease,box-shadow .2s ease;
+  margin-top:20px;
+}
+.btn-whatsapp:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 40px rgba(37,211,102,.45);
+}
+
+/* ─────────────────────────────────────────────
+   OPTION CARDS (step 2)
+───────────────────────────────────────────── */
+.options-list{display:flex;flex-direction:column;gap:9px;}
+
+.opt{
+  padding:15px 18px;
+  border:1px solid rgba(200,86,107,.15);
+  border-radius:14px;
+  background:rgba(255,255,255,.03);
+  cursor:pointer;
+  transition:all .22s ease;
+  display:flex;align-items:center;justify-content:space-between;
+  -webkit-tap-highlight-color:transparent;
+}
+.opt:hover{
+  background:rgba(200,86,107,.08);
+  border-color:rgba(200,86,107,.35);
+}
+.opt.selected{
+  background:rgba(200,86,107,.12);
+  border-color:var(--rose);
+  box-shadow:0 0 0 1px rgba(200,86,107,.2) inset;
+}
+.opt__text{
+  display:flex;flex-direction:column;gap:3px;
+}
+.opt__name{
+  font-size:.88rem;font-weight:500;
+  color:var(--text-a);letter-spacing:.01em;
+}
+.opt__desc{
+  font-size:.74rem;color:var(--text-c);font-weight:300;
+}
+.opt__check{
+  width:20px;height:20px;border-radius:50%;
+  border:1.5px solid rgba(200,86,107,.35);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-left:12px;
+  transition:all .22s ease;
+}
+.opt.selected .opt__check{
+  background:var(--rose);border-color:var(--rose);
+}
+.opt.selected .opt__check::after{
+  content:'';
+  width:7px;height:7px;
+  background:#fff;border-radius:50%;
+}
+
+/* ─────────────────────────────────────────────
+   DIVIDER
+───────────────────────────────────────────── */
+.divider{
+  display:flex;align-items:center;gap:10px;
+  margin:8px 0 0;
+}
+.divider__line{
+  flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,86,107,.2),transparent);
+}
+.divider__word{
+  font-size:.65rem;letter-spacing:.14em;
+  color:var(--text-c);font-weight:400;
+}
+
+/* ─────────────────────────────────────────────
+   VALIDATION ERROR
+───────────────────────────────────────────── */
+.err{
+  font-size:.75rem;color:var(--rose);
+  text-align:center;margin-top:12px;
+  opacity:0;transition:opacity .25s;
+  height:1rem;
+}
+.err.show{opacity:1;}
+
+/* ─────────────────────────────────────────────
+   STEP 3 — SUMMARY
+───────────────────────────────────────────── */
+.summary{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(200,86,107,.15);
+  border-radius:16px;
+  padding:20px 20px;
+  margin:24px 0 0;
+  display:flex;flex-direction:column;gap:12px;
+}
+.summary__row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:16px;
+}
+.summary__key{
+  font-size:.72rem;letter-spacing:.1em;
+  color:var(--text-c);font-weight:400;
+  white-space:nowrap;
+}
+.summary__val{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;font-style:italic;
+  color:var(--blush);text-align:right;
+}
+.summary__sep{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,86,107,.15),transparent);
+}
+
+/* ─────────────────────────────────────────────
+   AUDIO TOGGLE
+───────────────────────────────────────────── */
+#audio-toggle{
+  position:fixed;top:20px;right:20px;z-index:100;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(28,16,23,.8);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(200,86,107,.2);
+  color:var(--text-b);
+  font-size:.8rem;letter-spacing:.02em;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:all .2s ease;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+#audio-toggle:hover{
+  border-color:rgba(200,86,107,.5);
+  color:var(--blush);
+  box-shadow:0 4px 28px rgba(200,86,107,.2);
+}
+
+/* ─────────────────────────────────────────────
+   PROGRESS DOTS
+───────────────────────────────────────────── */
+#progress{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:50;
+}
+.prog-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--rim);
+  transition:all .4s ease;
+}
+.prog-dot.active{
+  background:var(--rose);
+  width:20px;border-radius:4px;
+  box-shadow:0 0 8px var(--rose);
+}
+.prog-dot.done{background:var(--rose-muted);}
+
+/* ─────────────────────────────────────────────
+   ANIMATIONS — text stagger for step 1
+───────────────────────────────────────────── */
+.reveal{
+  opacity:0;transform:translateY(14px);
+  animation:revealUp .6s ease forwards;
+}
+.reveal:nth-child(1){animation-delay:.1s;}
+.reveal:nth-child(2){animation-delay:.25s;}
+.reveal:nth-child(3){animation-delay:.4s;}
+.reveal:nth-child(4){animation-delay:.6s;}
+@keyframes revealUp{
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ─────────────────────────────────────────────
+   STEP 3 sparkle burst (CSS only)
+───────────────────────────────────────────── */
+.spark-ring{
+  position:relative;width:64px;height:64px;
+  margin:0 auto 24px;
+}
+.spark-ring__inner{
+  width:100%;height:100%;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose),var(--rose-muted));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.5rem;font-weight:300;color:#fff;
+  animation:ringBreath 2.5s ease-in-out infinite;
+  box-shadow:0 0 0 0 rgba(200,86,107,.4);
+}
+@keyframes ringBreath{
+  0%,100%{box-shadow:0 0 0 0 rgba(200,86,107,.4),0 0 0 0 rgba(200,86,107,.15);}
+  50%    {box-shadow:0 0 0 10px rgba(200,86,107,.1),0 0 0 20px rgba(200,86,107,.05);}
+}
+.spark-ring__particle{
+  position:absolute;top:50%;left:50%;
+  width:4px;height:4px;border-radius:50%;
+  background:var(--rose);
+  animation:sparkOut 1.6s ease-out infinite;
+}
+@keyframes sparkOut{
+  0%  {opacity:1;transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(0);}
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media(min-width:480px){
+  .card{padding:56px 44px 50px;}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="aurora" aria-hidden="true">
+  <div class="aurora__orb"></div>
+  <div class="aurora__orb"></div>
+  <div class="aurora__orb"></div>
+</div>
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+<!-- Audio toggle -->
+<button id="audio-toggle" aria-label="Toggle music">♪</button>
+
+<!-- Progress indicator -->
+<div id="progress" aria-hidden="true">
+  <div class="prog-dot active" id="pd1"></div>
+  <div class="prog-dot"        id="pd2"></div>
+  <div class="prog-dot"        id="pd3"></div>
+</div>
+
+<!-- ───────────────────────────────────────────
+     APP
+──────────────────────────────────────────── -->
+<main id="app">
+
+  <!-- ════════════════════════════════
+       STEP 1 — INVITATION
+  ════════════════════════════════ -->
+  <section class="step active" id="step-1">
+    <div class="card card-enter">
+
+      <div class="ornament">
+        <span class="ornament__line"></span>
+        <span class="ornament__dot"></span>
+        <span class="ornament__line r"></span>
+      </div>
+
+      <p class="label reveal">a private invitation</p>
+
+      <h1 class="headline reveal">
+        Hey<br/>
+        <em>Sahanmi Vidunima</em>
+      </h1>
+
+      <p class="subline reveal">I have a question I've been meaning to ask.</p>
+
+      <p class="question reveal">
+        Would you like to go<br/>on a date with me?
+      </p>
+
+      <div class="btn-row">
+        <button class="btn-primary pulse" id="btn-yes" onclick="handleYes()">
+          Yes, I would
+        </button>
+        <button class="btn-ghost" id="btn-no"
+                onmouseenter="runAway()" ontouchstart="runAway()">
+          No thanks
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       STEP 2 — PREFERENCES
+  ════════════════════════════════ -->
+  <section class="step" id="step-2">
+    <div class="card card-enter">
+
+      <div class="ornament">
+        <span class="ornament__line"></span>
+        <span class="ornament__dot"></span>
+        <span class="ornament__line r"></span>
+      </div>
+
+      <p class="label">let's plan this right</p>
+      <h2 class="headline" style="font-size:clamp(1.7rem,6vw,2.1rem);">
+        How should<br/><em>our evening go?</em>
+      </h2>
+
+      <!-- Vibe -->
+      <p class="section-title">Choose a vibe</p>
+      <div class="options-list" id="vibe-options">
+
+        <div class="opt" data-group="vibe" data-value="Coffee &amp; Conversation"
+             onclick="selectOption(this)" tabindex="0" role="radio">
+          <div class="opt__text">
+            <span class="opt__name">Coffee &amp; Conversation</span>
+            <span class="opt__desc">A quiet café, unhurried hours</span>
+          </div>
+          <span class="opt__check"></span>
+        </div>
+
+        <div class="opt" data-group="vibe" data-value="Sunset Walk &amp; Drinks"
+             onclick="selectOption(this)" tabindex="0" role="radio">
+          <div class="opt__text">
+            <span class="opt__name">Sunset Walk &amp; Drinks</span>
+            <span class="opt__desc">Golden light, sea breeze, good company</span>
+          </div>
+          <span class="opt__check"></span>
+        </div>
+
+        <div class="opt" data-group="vibe" data-value="Ice Cream &amp; Dessert"
+             onclick="selectOption(this)" tabindex="0" role="radio">
+          <div class="opt__text">
+            <span class="opt__name">Ice Cream &amp; Dessert</span>
+            <span class="opt__desc">Something sweet for someone sweeter</span>
+          </div>
+          <span class="opt__check"></span>
+        </div>
+
+      </div>
+
+      <div class="divider" style="margin:20px 0 0;">
+        <span class="divider__line"></span>
+        <span class="divider__word">when</span>
+        <span class="divider__line"></span>
+      </div>
+
+      <!-- Day -->
+      <p class="section-title">Choose a day</p>
+      <div class="options-list" id="day-options">
+
+        <div class="opt" data-group="day" data-value="This Weekend"
+             onclick="selectOption(this)" tabindex="0" role="radio">
+          <div class="opt__text">
+            <span class="opt__name">This Weekend</span>
+            <span class="opt__desc">Why wait any longer</span>
+          </div>
+          <span class="opt__check"></span>
+        </div>
+
+        <div class="opt" data-group="day" data-value="Next Week"
+             onclick="selectOption(this)" tabindex="0" role="radio">
+          <div class="opt__text">
+            <span class="opt__name">Next Week</span>
+            <span class="opt__desc">A little anticipation suits the occasion</span>
+          </div>
+          <span class="opt__check"></span>
+        </div>
+
+        <div class="opt" data-group="day" data-value="Surprise me"
+             onclick="selectOption(this)" tabindex="0" role="radio">
+          <div class="opt__text">
+            <span class="opt__name">Surprise me</span>
+            <span class="opt__desc">You pick — I trust you completely</span>
+          </div>
+          <span class="opt__check"></span>
+        </div>
+
+      </div>
+
+      <p class="err" id="step2-err">Please make both selections to continue.</p>
+
+      <button class="btn-primary" style="margin-top:28px;" onclick="handleConfirm()">
+        Confirm the plan
+      </button>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       STEP 3 — CONFIRMATION
+  ════════════════════════════════ -->
+  <section class="step" id="step-3">
+    <div class="card card-enter">
+
+      <!-- Spark ring (pure CSS) -->
+      <div class="spark-ring" id="spark-ring">
+        <div class="spark-ring__inner">✦</div>
+      </div>
+
+      <p class="label">it's set</p>
+      <h2 class="headline" style="margin-bottom:6px;">
+        <em>Our date</em> is happening.
+      </h2>
+      <p class="subline">Here's what we agreed on:</p>
+
+      <div class="summary">
+        <div class="summary__row">
+          <span class="summary__key">Activity</span>
+          <span class="summary__val" id="sum-vibe">—</span>
+        </div>
+        <div class="summary__sep"></div>
+        <div class="summary__row">
+          <span class="summary__key">When</span>
+          <span class="summary__val" id="sum-day">—</span>
+        </div>
+        <div class="summary__sep"></div>
+        <div class="summary__row">
+          <span class="summary__key">Who</span>
+          <span class="summary__val">You &amp; me</span>
+        </div>
+      </div>
+
+      <a id="btn-wa" href="#" target="_blank" rel="noopener noreferrer"
+         class="btn-whatsapp">
+        Send on WhatsApp
+      </a>
+
+      <p style="font-size:.68rem;color:var(--text-c);text-align:center;margin-top:14px;letter-spacing:.04em;">
+        Opens WhatsApp with a pre-written message
+      </p>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+const S = { vibe: null, day: null, noCount: 0, muted: false };
+
+/* ═══════════════════════════════════════
+   PARTICLE SYSTEM
+═══════════════════════════════════════ */
+(function initParticles(){
+  const canvas = document.getElementById('particle-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function Particle(){
+    this.reset = function(){
+      this.x  = Math.random() * W;
+      this.y  = Math.random() * H;
+      this.r  = .5 + Math.random() * 1.2;
+      this.vx = (Math.random() - .5) * .18;
+      this.vy = -.12 - Math.random() * .22;
+      this.life = 0;
+      this.maxLife = 160 + Math.random() * 200;
+      // colour: rose or gold
+      this.hue = Math.random() > .65 ? [212,169,106] : [200,86,107];
+    };
+    this.reset();
+    // stagger initial positions
+    this.life = Math.random() * this.maxLife;
+  }
+
+  for(let i=0;i<55;i++) particles.push(new Particle());
+
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    for(const p of particles){
+      p.life++;
+      if(p.life > p.maxLife) p.reset();
+      const progress = p.life / p.maxLife;
+      const alpha = progress < .15
+        ? progress / .15
+        : progress > .8
+          ? (1-progress) / .2
+          : 1;
+      ctx.beginPath();
+      ctx.arc(p.x + Math.sin(p.life*.02)*4, p.y - p.life * .3, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${p.hue[0]},${p.hue[1]},${p.hue[2]},${alpha * .6})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ═══════════════════════════════════════
+   AUDIO TOGGLE
+═══════════════════════════════════════ */
+document.getElementById('audio-toggle').addEventListener('click',()=>{
+  S.muted = !S.muted;
+  document.getElementById('audio-toggle').textContent = S.muted ? '♪̶' : '♪';
+});
+
+/* ═══════════════════════════════════════
+   NO BUTTON — ESCAPE
+═══════════════════════════════════════ */
+function runAway(){
+  S.noCount++;
+  const btn    = document.getElementById('btn-no');
+  const yesBtn = document.getElementById('btn-yes');
+
+  btn.classList.add('roaming');
+
+  const m   = 70;
+  const bW  = btn.offsetWidth  || 110;
+  const bH  = btn.offsetHeight || 48;
+  const nx  = m + Math.random() * (window.innerWidth  - m*2 - bW);
+  const ny  = m + Math.random() * (window.innerHeight - m*2 - bH);
+
+  btn.style.left = nx + 'px';
+  btn.style.top  = ny + 'px';
+
+  // Shrink No, grow Yes
+  const shrink = Math.max(.4, 1 - S.noCount * .12);
+  const grow   = Math.min(1.2, 1 + S.noCount * .05);
+  btn.style.transform = `scale(${shrink})`;
+  btn.style.opacity   = String(Math.max(.15, shrink));
+  yesBtn.style.transform = `scale(${grow})`;
+  yesBtn.style.boxShadow = `0 4px ${40 + S.noCount*8}px rgba(200,86,107,${.35 + S.noCount*.08})`;
+
+  if(S.noCount >= 5){
+    btn.style.opacity = '0';
+    btn.style.pointerEvents = 'none';
+  }
+}
+
+/* ═══════════════════════════════════════
+   YES
+═══════════════════════════════════════ */
+function handleYes(){
+  const btn = document.getElementById('btn-yes');
+  btn.style.transform = 'scale(1.08)';
+  btn.style.animation = 'none';
+  setTimeout(()=> goToStep('step-2'), 380);
+}
+
+/* ═══════════════════════════════════════
+   OPTION SELECTION
+═══════════════════════════════════════ */
+function selectOption(el){
+  const g = el.dataset.group;
+  document.querySelectorAll(`.opt[data-group="${g}"]`)
+    .forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  if(g === 'vibe') S.vibe = el.dataset.value;
+  if(g === 'day')  S.day  = el.dataset.value;
+  document.getElementById('step2-err').classList.remove('show');
+}
+
+// Keyboard
+document.querySelectorAll('.opt').forEach(o=>{
+  o.addEventListener('keydown', e=>{
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); selectOption(o); }
+  });
+});
+
+/* ═══════════════════════════════════════
+   CONFIRM STEP 2 → 3
+═══════════════════════════════════════ */
+function handleConfirm(){
+  if(!S.vibe || !S.day){
+    document.getElementById('step2-err').classList.add('show');
+    return;
+  }
+
+  document.getElementById('sum-vibe').textContent = S.vibe;
+  document.getElementById('sum-day').textContent  = S.day;
+
+  // Strip HTML entities for URL
+  const vibe = S.vibe.replace(/&amp;/g,'&');
+  const day  = S.day.replace(/&amp;/g,'&');
+
+  const msg = encodeURIComponent(
+    `Hey! I'd love to go on our date. Let's do ${vibe} — ${day}!`
+  );
+  document.getElementById('btn-wa').href = `https://wa.me/0766756104?text=${msg}`;
+
+  goToStep('step-3');
+
+  // Inject spark particles
+  buildSparkRing();
+
+  // Confetti after card lands
+  setTimeout(launchConfetti, 500);
+}
+
+/* ═══════════════════════════════════════
+   SPARK RING PARTICLES
+═══════════════════════════════════════ */
+function buildSparkRing(){
+  const ring = document.getElementById('spark-ring');
+  // remove old particles
+  ring.querySelectorAll('.spark-ring__particle').forEach(p=>p.remove());
+  const count = 10;
+  for(let i=0;i<count;i++){
+    const angle  = (i / count) * Math.PI * 2;
+    const dist   = 34 + Math.random() * 20;
+    const dx     = Math.cos(angle) * dist;
+    const dy     = Math.sin(angle) * dist;
+    const delay  = (i / count) * 1.5;
+    const p      = document.createElement('span');
+    p.className  = 'spark-ring__particle';
+    p.style.setProperty('--dx', dx+'px');
+    p.style.setProperty('--dy', dy+'px');
+    p.style.animationDelay  = delay + 's';
+    p.style.animationDuration = (1.2 + Math.random()*.6) + 's';
+    // alternate gold / rose
+    p.style.background = i%2===0 ? 'var(--rose)' : 'var(--gold)';
+    ring.appendChild(p);
+  }
+}
+
+/* ═══════════════════════════════════════
+   CONFETTI
+═══════════════════════════════════════ */
+function launchConfetti(){
+  const colors = ['#c8566b','#e87d93','#f2c4ce','#d4a96a','#7a3347'];
+
+  confetti({ particleCount:80, spread:65, origin:{x:.3,y:.55}, colors, startVelocity:42 });
+  confetti({ particleCount:80, spread:65, origin:{x:.7,y:.55}, colors, startVelocity:42 });
+
+  const end = Date.now() + 2800;
+  (function frame(){
+    confetti({ particleCount:4, angle:60,  spread:50, origin:{x:0}, colors });
+    confetti({ particleCount:4, angle:120, spread:50, origin:{x:1}, colors });
+    if(Date.now()<end) requestAnimationFrame(frame);
+  })();
+}
+
+/* ═══════════════════════════════════════
+   STEP NAVIGATION + PROGRESS
+═══════════════════════════════════════ */
+const STEPS = ['step-1','step-2','step-3'];
+
+function goToStep(id){
+  const idx = STEPS.indexOf(id);
+
+  // Update steps
+  document.querySelectorAll('.step').forEach(s=> s.classList.remove('active'));
+  const target = document.getElementById(id);
+  target.classList.add('active');
+
+  // Re-trigger card animation
+  const card = target.querySelector('.card');
+  card.classList.remove('card-enter');
+  void card.offsetWidth;
+  card.classList.add('card-enter');
+
+  // Update progress dots
+  document.querySelectorAll('.prog-dot').forEach((d,i)=>{
+    d.classList.remove('active','done');
+    if(i===idx)   d.classList.add('active');
+    else if(i<idx) d.classList.add('done');
+  });
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
