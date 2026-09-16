@@ -923,9 +923,10 @@ function handleConfirm(){
   const vibe = S.vibe.replace(/&amp;/g,'&');
   const day  = S.day.replace(/&amp;/g,'&');
 
-  const msg = encodeURIComponent(
-    `Hey! I'd love to go on our date. Let's do ${vibe} — ${day}!`
-  );
+const msg = encodeURIComponent(
+  `Hey love! ❤️ It’s a date! Let’s make some beautiful memories together with ${vibe} on ${day}. I can’t wait to spend that special time with you. 🥰✨`
+);
+
   document.getElementById('btn-wa').href = `https://wa.me/94766756104?text=${msg}`;
 
   goToStep('step-3');
